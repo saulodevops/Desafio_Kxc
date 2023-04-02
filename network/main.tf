@@ -1,8 +1,4 @@
 # Cria a VPC com duas subnets públicas e duas subnets privadas
-provider "aws" {
-  profile = "sauloramos-kxc"
-  region     = "us-east-1"
-}
 
 resource "aws_vpc" "vpc" {
   cidr_block = var.vpc_cidr_block
