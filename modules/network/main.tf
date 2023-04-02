@@ -148,7 +148,7 @@ resource "aws_route_table_association" "private_subnet_association_2" {
   route_table_id = aws_route_table.private_subnet_route_table_2.id
 }
 
-output "my_vpc_id" {
+output "vpc_id" {
   value = aws_vpc.vpc.id
 }
 

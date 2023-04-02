@@ -1,3 +1,7 @@
+module "rds" {
+  source = "../rds"
+}
+
 # Cria as module.rdsiáveis de ambiente na AWS Parameter Store
 
 resource "aws_ssm_parameter" "API_PORT" {
@@ -69,6 +73,6 @@ resource "aws_ssm_parameter" "DB_USER" {
 #   value = aws_ssm_parameter.DB_PASSWORD.value
 # }
 
-module "rds" {
-  source = "../rds"
-}
+# module "rds" {
+#   source = "../rds"
+# }

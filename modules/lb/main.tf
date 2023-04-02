@@ -1,12 +1,12 @@
 #Definição do security group do load balancer 
 resource "aws_security_group" "lb_sg" {
   name_prefix        = "lbsg-"
-  description = "Allow TLS inbound traffic"
-  vpc_id      = module.network.my_vpc_id
+  description = "Allow HTTP inbound traffic"
+  vpc_id      = var.vpc_id
 
   ingress {
-    from_port        = 3000
-    to_port          = 3000
+    from_port        = 80
+    to_port          = 80
     protocol         = "tcp"
     cidr_blocks      = ["0.0.0.0/0"]
   }
@@ -28,10 +28,9 @@ resource "aws_lb_target_group" "my_target_group" {
   name_prefix   = "my-tg-"
   port          = 3000
   protocol      = "HTTP"
-  vpc_id      = module.network.my_vpc_id
+  vpc_id        = var.vpc_id
   target_type   = "ip"
-  depends_on = [module.network]
-  
+    
   health_check {
     healthy_threshold   = 2
     interval            = 30
@@ -49,16 +48,10 @@ resource "aws_lb" "my_lb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.lb_sg.id]
-  subnets            = [module.network.private_subnet_1_id, module.network.private_subnet_2_id]
+  subnets            = [var.private_subnet_1_id, var.private_subnet_2_id]
 
 }
 
 output "target_group_arn" {
   value = aws_lb_target_group.my_target_group.arn
 }
-
-module "network" {
-  source = "../network"
-}
-
-

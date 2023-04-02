@@ -2,11 +2,7 @@
 
 resource "aws_db_subnet_group" "db_subnet_group" {
   name       = "db-subnet-group"
-  subnet_ids = [
-    module.network.private_subnet_1_id,
-    module.network.private_subnet_2_id,
-  ]
-  depends_on = [module.network]
+  subnet_ids = [var.private_subnet_1_id,var.private_subnet_2_id]
 }
 
 resource "aws_db_instance" "db_instance" {
@@ -21,33 +17,12 @@ resource "aws_db_instance" "db_instance" {
   storage_type         = "gp2"
   db_subnet_group_name = aws_db_subnet_group.db_subnet_group.name
   skip_final_snapshot = true
-  # security_group_id = aws_security_group.db_security_group.id
-  depends_on = [module.network]
-  
-  tags = {
-    Name = "my-db-instance"
-  }
 }
-
-# resource "aws_security_group" "db_security_group" {
-#   name          = "db-security-group"
-#   ingress {
-#     from_port   = 5432
-#     to_port     = 5432
-#     protocol    = "tcp"
-#     cidr_blocks = ["0.0.0.0/0"]
-#  }
-# }
 
 output "rds_instance_address" {
   description = "ARN da instancia RDS"
   value = aws_db_instance.db_instance.address
 }
-
-# output "db_security_group_id" {
-#   description = "ID do grupo de segurança do RDS"
-#   value = aws_security_group.db_security_group.id
-# }
 
 output "DB_DATABASE" {
   value = aws_db_instance.db_instance.name
@@ -60,14 +35,3 @@ output "db_port" {
 output "DB_USER" {
   value = aws_db_instance.db_instance.username
 }
-
-# output "db_password" {
-#   value = aws_db_instance.db_instance.password
-# }
-
-module "network" {
-  source = "./network"
-}
-
-
-

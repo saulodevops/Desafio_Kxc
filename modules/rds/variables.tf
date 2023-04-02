@@ -39,3 +39,15 @@ variable "db_port" {
   description = "Porta que a database da aplicacao vai escutar"
   default = "5432"
 }
+
+variable "private_subnet_1_id" {
+  description = "List of subnets in which to place the NAT Gateway"
+}
+
+variable "private_subnet_2_id" {
+  description = "List of subnets in which to place the NAT Gateway"
+}
+
+# variable "rds_instance_address" {
+  
+# }
