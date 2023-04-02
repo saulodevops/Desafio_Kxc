@@ -1,9 +1,3 @@
-provider "aws" {
-  profile = "sauloramos-kxc"
-  region     = "us-east-1"
-}
-
-
 #Definição do security group do load balancer 
 resource "aws_security_group" "lb_sg" {
   name_prefix        = "lbsg-"
@@ -57,10 +51,6 @@ resource "aws_lb" "my_lb" {
   security_groups    = [aws_security_group.lb_sg.id]
   subnets            = [module.network.private_subnet_1_id, module.network.private_subnet_2_id]
 
-  # depends_on = [
-  #   aws_lb_listener.my_listener,
-  #   aws_lb_target_group.my_target_group
-  # ]
 }
 
 output "target_group_arn" {
@@ -68,7 +58,7 @@ output "target_group_arn" {
 }
 
 module "network" {
-  source = "./network"
+  source = "../network"
 }
 
 
