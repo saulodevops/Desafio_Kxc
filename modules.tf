@@ -10,14 +10,15 @@ module "network" {
 module "lb" {
   source = "./modules/lb"
   vpc_id = module.network.vpc_id
-  private_subnet_1_id = module.network.private_subnet_1_id
-  private_subnet_2_id = module.network.private_subnet_2_id
+  public_subnet_1_id = module.network.public_subnet_1_id
+  public_subnet_2_id = module.network.public_subnet_2_id
 }
 
 module "rds" {
   source = "./modules/rds"
   private_subnet_1_id = module.network.private_subnet_1_id
   private_subnet_2_id = module.network.private_subnet_2_id
+  vpc_id = module.network.vpc_id
 }
 
 # module "parameter_store" {

@@ -58,7 +58,7 @@ resource "aws_lb" "my_lb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.lb_sg.id]
-  subnets            = [var.private_subnet_1_id, var.private_subnet_2_id]
+  subnets            = [var.public_subnet_1_id, var.public_subnet_2_id]
 
 }
 

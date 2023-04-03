@@ -2,9 +2,11 @@
 # Recurso da VPC
 resource "aws_vpc" "vpc" {
   cidr_block = var.vpc_cidr_block
+  enable_dns_hostnames = true
+  enable_dns_support   = true
 
   tags = {
-    Name = "my-vpc"
+    Name = "vpc-kxc"
   }
 }
 
@@ -19,6 +21,7 @@ resource "aws_subnet" "public_subnet_1" {
   vpc_id     = aws_vpc.vpc.id
   cidr_block = var.public_subnet_cidr_blocks[0]
   availability_zone = "us-east-1a"
+  map_public_ip_on_launch = true
 
   tags = {
     Name = "public-subnet-1"
@@ -30,6 +33,7 @@ resource "aws_subnet" "public_subnet_2" {
   vpc_id     = aws_vpc.vpc.id
   cidr_block = var.public_subnet_cidr_blocks[1]
   availability_zone = "us-east-1b"
+  map_public_ip_on_launch = true
 
   tags = {
     Name = "public-subnet-2"
@@ -158,4 +162,12 @@ output "private_subnet_1_id" {
 
 output "private_subnet_2_id" {
   value = aws_subnet.private_subnet_2.id
+}
+
+output "public_subnet_1_id" {
+  value = aws_subnet.public_subnet_1.id
+}
+
+output "public_subnet_2_id" {
+  value = aws_subnet.public_subnet_2.id
 }

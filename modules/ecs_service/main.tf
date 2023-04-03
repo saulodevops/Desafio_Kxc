@@ -14,6 +14,15 @@ resource "aws_security_group" "ecs_sg" {
     protocol  = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
 }
 
 # Definição do IAM role do ECS
@@ -68,51 +77,60 @@ resource "aws_iam_role_policy_attachment" "ecs_execution_policy_attachment" {
 
 # Definição do recurso aws_ecs_task_definition
 resource "aws_ecs_task_definition" "my_task" {
-  family                   = var.task_family
-  network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
-  cpu                      = 1024
-  memory                   = 2048 
-  execution_role_arn       = "arn:aws:iam::063435536130:role/ecsTaskExecutionRole"    
-  container_definitions    = jsonencode([
+  family = var.task_family
+
+  container_definitions = <<DEFINITION
+  [
     {
-        name      = var.app_name
-        image     = var.app_image
-        cpu       = 10
-        memory    = 512
-        essential = true
-        portMappings = [
-      {
-        containerPort = 3000
-        hostPort      = 3000
-      }
-    ]
-        environment: [
-          {
-            name: "DB_USER",
-            value: "postgres"
-          },
-          {
-            name: "DB_PASSWORD",
-            value:"mypasswordj4n3r0"
-          },
-          {
-            name: "DB_PORT",
-            value: "5432"
-          },
-          {
-            name: "DB_HOST",
-            value: var.rds_instance_address
-          },
-          {
-            name: "DB_DATABASE",
-            value: "mydb"
-          }
-        ]
-    }    
-  ])
+      "name": "${var.app_name}",
+      "image": "${var.app_image}",
+      "entryPoint": [],
+      "environment": [
+        {
+          "name": "DB_USER",
+          "value": "postgres"
+        },
+        {
+          "name": "DB_PASSWORD",
+          "value": "mypasswordj4n3r0"
+        },
+        {
+          "name": "DB_PORT",
+          "value": "5432"
+        },
+        {
+          "name": "DB_HOST",
+          "value": "${var.rds_instance_address}"
+        },
+        {
+          "name": "DB_DATABASE",
+          "value": "mydb"
+        }
+      ],
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "hostPort": 3000
+        }
+      ],
+      "cpu": 256,
+      "memory": 512,
+      "networkMode": "awsvpc"
+    }
+  ]
+DEFINITION
+
+
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  memory                   = "512"
+  cpu                      = "256"
+  execution_role_arn       = "arn:aws:iam::063435536130:role/ecsTaskExecutionRole"
+  task_role_arn            = aws_iam_role.ecs_execution.arn
 
 }
+
 
 # Definição do recurso aws_ecs_service
 resource "aws_ecs_service" "my_service" {
@@ -121,17 +139,19 @@ resource "aws_ecs_service" "my_service" {
   task_definition = aws_ecs_task_definition.my_task.arn
   desired_count   = var.desired_count
   launch_type     = "FARGATE"
+  scheduling_strategy  = "REPLICA"
+  force_new_deployment = true
 
   load_balancer {
     target_group_arn = var.target_group_arn
     container_name   = var.app_name
-    container_port   = "3000"
+    container_port   = 3000
   }
 
   network_configuration {
     security_groups = [aws_security_group.ecs_sg.id, var.load_balancer_sg_id]
     subnets         = [var.private_subnet_1_id, var.private_subnet_2_id]
-    assign_public_ip = "true"
+    assign_public_ip = false
   }
 
   depends_on = [

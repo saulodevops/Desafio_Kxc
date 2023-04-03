@@ -48,6 +48,6 @@ variable "private_subnet_2_id" {
   description = "List of subnets in which to place the NAT Gateway"
 }
 
-# variable "rds_instance_address" {
+variable "vpc_id" {
   
-# }
+}
