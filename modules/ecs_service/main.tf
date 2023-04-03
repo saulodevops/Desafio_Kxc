@@ -122,19 +122,19 @@ resource "aws_ecs_service" "my_service" {
   desired_count   = var.desired_count
   launch_type     = "FARGATE"
 
-  # load_balancer {
-  #   target_group_arn = var.target_group_arn
-  #   container_name   = var.app_name
-  #   container_port   = "3000"
-  # }
+  load_balancer {
+    target_group_arn = var.target_group_arn
+    container_name   = var.app_name
+    container_port   = "3000"
+  }
 
   network_configuration {
-    security_groups = [aws_security_group.ecs_sg.id]
+    security_groups = [aws_security_group.ecs_sg.id, var.load_balancer_sg_id]
     subnets         = [var.private_subnet_1_id, var.private_subnet_2_id]
     assign_public_ip = "true"
   }
 
   depends_on = [
-    aws_ecs_task_definition.my_task
+    aws_ecs_task_definition.my_task, var.aws_lb_listener
   ]
 }

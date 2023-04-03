@@ -7,12 +7,12 @@ module "network" {
   source = "./modules/network"
 }
 
-# module "lb" {
-#   source = "./modules/lb"
-#   vpc_id = module.network.vpc_id
-#   private_subnet_1_id = module.network.private_subnet_1_id
-#   private_subnet_2_id = module.network.private_subnet_2_id
-# }
+module "lb" {
+  source = "./modules/lb"
+  vpc_id = module.network.vpc_id
+  private_subnet_1_id = module.network.private_subnet_1_id
+  private_subnet_2_id = module.network.private_subnet_2_id
+}
 
 module "rds" {
   source = "./modules/rds"
@@ -31,4 +31,7 @@ module "ecs_service" {
   private_subnet_1_id = module.network.private_subnet_1_id
   private_subnet_2_id = module.network.private_subnet_2_id
   vpc_id = module.network.vpc_id
+  load_balancer_sg_id = module.lb.load_balancer_sg_id
+  target_group_arn = module.lb.target_group_arn
+  aws_lb_listener = module.lb.aws_lb_listener
 }

@@ -48,3 +48,15 @@ variable "private_subnet_2_id" {
 
 variable "vpc_id" {
 }
+
+variable "load_balancer_sg_id" {
+
+}
+
+variable "target_group_arn" {
+
+}
+
+variable "aws_lb_listener" {
+  
+}
